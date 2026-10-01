@@ -6,39 +6,69 @@
 <meta name="theme-color" content="#c62828">
 <link rel="manifest" href="manifest.json">
 <title>Jai Bajrang Bali Fast Food</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#fff7ed;color:#2b1b12}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#fff7ed;color:#2b1b12}
 header{background:linear-gradient(135deg,#b71c1c,#ef6c00);color:white;padding:20px 16px 24px;position:sticky;top:0;z-index:5;box-shadow:0 4px 15px #0002}
-h1{margin:0;font-size:25px}.sub{opacity:.9;font-size:13px;margin-top:5px}
+h1{margin:0;font-size:25px}
+.sub{opacity:.9;font-size:13px;margin-top:5px}
 main{max-width:760px;margin:auto;padding:14px 14px 100px}
 .section{background:white;border-radius:18px;padding:15px;margin:12px 0;box-shadow:0 2px 12px #00000010}
 h2{font-size:18px;margin:0 0 12px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .item{border:1px solid #f0d7c2;border-radius:15px;padding:13px;background:#fffaf6}
-.item b{display:block;font-size:17px}.price{font-weight:800;color:#c62828;margin:6px 0 10px}
-button{border:0;border-radius:11px;padding:10px 13px;font-weight:700;cursor:pointer}
-.add{background:#c62828;color:#fff}.secondary{background:#ffe0b2;color:#6d3200}
+.item b{display:block;font-size:17px}
+.price{font-weight:800;color:#c62828;margin:6px 0 10px}
+button{border:0;border-radius:11px;padding:10px 13px;font-weight:700;cursor:pointer;font-size:14px}
+.add{background:#c62828;color:#fff}
+.secondary{background:#ffe0b2;color:#6d3200}
 .cartrow{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;padding:10px 0}
-.qty button{padding:5px 9px;margin:0 2px}.total{font-size:20px;font-weight:900;margin-top:12px}
-.choice{display:flex;gap:8px;flex-wrap:wrap}.choice button.active{outline:3px solid #ffb74d;background:#ffe0b2}
-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:5px 0 10px;font-size:15px}
-.small{font-size:12px;color:#666}.pay{width:100%;background:#2e7d32;color:white;font-size:16px;margin-top:10px}
-#status{padding:10px;border-radius:10px;background:#fff3cd;margin-top:10px;display:none}
+.qty button{padding:5px 9px;margin:0 2px}
+.total{font-size:20px;font-weight:900;margin-top:12px}
+.choice{display:flex;gap:8px;flex-wrap:wrap}
+.choice button.active{outline:3px solid #ffb74d;background:#ffe0b2}
+input,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin:5px 0 10px;font-size:15px;font-family:inherit}
+textarea{height:80px}
+.small{font-size:12px;color:#666}
+.pay{width:100%;background:#2e7d32;color:white;font-size:16px;margin-top:10px}
+.wa{width:100%;background:#25d366;color:white;font-size:15px;margin-top:10px}
+#status{padding:10px;border-radius:10px;background:#fff3cd;margin-top:10px;display:none;font-size:14px}
 footer{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;padding:10px 14px;display:flex;gap:8px;z-index:8}
 footer button{flex:1}
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
+
 <body>
+
 <header>
 <h1>🚩 Jai Bajrang Bali Fast Food</h1>
-<div class="sub">Fresh food • Pickup & Home Delivery</div>
+<div class="sub">Fresh food • Pickup &amp; Home Delivery</div>
 </header>
+
 <main>
+
+<section class="section" id="setupBox" style="display:none">
+<h2>🔧 Owner Setup</h2>
+<div class="small">
+Ye sirf owner ke liye hai. Dukaan par khade hokar button dabao,
+jo lat/long aaye wo code mein SHOP_LAT aur SHOP_LON mein daal do.
+</div>
+
+<button class="secondary" style="margin-top:8px" onclick="getShopLocation()">
+📍 Is jagah ko shop location banao
+</button>
+
+<div id="setupResult" class="small" style="margin-top:8px;font-size:14px"></div>
+</section>
+
+
 <section class="section">
 <h2>🍔 Menu</h2>
 <div class="grid" id="menu"></div>
 </section>
+
 
 <section class="section">
 <h2>🛒 Your Order</h2>
@@ -46,91 +76,662 @@ footer button{flex:1}
 <div class="total" id="subtotal">Total: ₹0</div>
 </section>
 
+
 <section class="section">
 <h2>📦 Order Type</h2>
+
 <div class="choice">
-<button id="pickupBtn" class="secondary active" onclick="setType('pickup')">🏪 Shop Pickup</button>
-<button id="deliveryBtn" class="secondary" onclick="setType('delivery')">🛵 Home Delivery</button>
+<button id="pickupBtn" class="secondary active" onclick="setType('pickup')">
+🏪 Shop Pickup
+</button>
+
+<button id="deliveryBtn" class="secondary" onclick="setType('delivery')">
+🛵 Home Delivery
+</button>
 </div>
+
 <div id="deliveryBox" style="display:none;margin-top:12px">
+
 <input id="address" placeholder="Delivery address / mohalla">
-<button class="secondary" onclick="calcDistance()">📍 My location se distance nikalo</button>
-<div class="small">Delivery charge: har 400 meter (ya uske part) par ₹10.</div>
+
+<button class="secondary" onclick="calcDistance()">
+📍 My location se distance nikalo
+</button>
+
+<div class="small" style="margin-top:6px">
+Delivery charge: har 400 meter (ya uske part) par ₹10.
+</div>
+
 <div id="distanceText" class="small"></div>
 </div>
 </section>
 
+
 <section class="section">
 <h2>👤 Customer Details</h2>
+
 <input id="name" placeholder="Customer name">
+
 <input id="phone" placeholder="Mobile number" inputmode="tel">
-<textarea id="note" placeholder="Extra note (optional)" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;height:80px"></textarea>
+
+<textarea id="note" placeholder="Extra note (optional)"></textarea>
 </section>
+
 
 <section class="section">
 <h2>💳 Payment</h2>
-<div class="small">Order tabhi confirm hoga jab payment complete ho. UPI ID owner settings mein replace karni hogi.</div>
-<button class="pay" onclick="payNow()">Pay & Confirm Order</button>
+
+<div class="small">
+Payment UPI app se hoga. UPI PIN customer khud apne UPI app mein dalega.
+PIN website ko nahi milega.
+</div>
+
+<button class="pay" onclick="payNow()">
+Pay &amp; Confirm Order
+</button>
+
 <div id="status"></div>
 </section>
+
 </main>
+
+
 <footer>
-<button class="secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">🍔 Menu</button>
-<button class="add" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">🛒 Cart / Order</button>
+
+<button class="secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+🍔 Menu
+</button>
+
+<button class="add" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">
+🛒 Cart / Order
+</button>
+
 </footer>
+
+
 <script>
-const products=[
-{name:"Samosa",price:15,unit:"2 pieces"},
-{name:"Burger",price:30,unit:"1 piece"},
-{name:"Sprite",price:0,unit:"per litre"},
-{name:"Thomson",price:0,unit:"per litre"},
-{name:"Coca-Cola",price:0,unit:"per litre"},
-{name:"Water",price:0,unit:"per litre"}
+
+// ================= OWNER SETTINGS =================
+
+const CONFIG = {
+
+  UPI_ID: "9798330093@ibl",
+
+  SHOP_NAME: "Jai Bajrang Bali Fast Food",
+
+  OWNER_WHATSAPP: "919798330093",
+
+  SHOP_LAT: null,
+  SHOP_LON: null,
+
+  METERS_PER_STEP: 400,
+  CHARGE_PER_STEP: 10
+
+};
+
+// ===================================================
+
+const $ = id => document.getElementById(id);
+
+const products = [
+  {name:"Samosa", price:15, unit:"2 pieces"},
+  {name:"Burger", price:30, unit:"1 piece"},
+  {name:"Sprite", price:0, unit:"per litre"},
+  {name:"Thomson", price:0, unit:"per litre"},
+  {name:"Coca-Cola", price:0, unit:"per litre"},
+  {name:"Water", price:0, unit:"per litre"}
 ];
-let cart={},type="pickup",distance=0;
+
+let cart = {};
+let type = "pickup";
+let distance = 0;
+let lastOrder = null;
+
+
+// ================= LOCATION =================
+
+function shopLocationSet(){
+  return typeof CONFIG.SHOP_LAT === "number" &&
+         typeof CONFIG.SHOP_LON === "number";
+}
+
+
+// ================= DELIVERY CHARGE =================
+
+function deliveryCharge(){
+  if(type !== "delivery") return 0;
+  return Math.ceil(distance / CONFIG.METERS_PER_STEP)
+         * CONFIG.CHARGE_PER_STEP;
+}
+
+
+// ================= TOTAL =================
+
+function itemsTotal(){
+  return Object.keys(cart).reduce(
+    (s,k) => s + cart[k].price * cart[k].qty,
+    0
+  );
+}
+
+
+// ================= MENU =================
+
 function renderMenu(){
- document.getElementById("menu").innerHTML=products.map((p,i)=>{
-   if(p.price===0)return `<div class="item"><b>${p.name}</b><div class="small">Rate owner se set hoga (${p.unit})</div><input id="p${i}" type="number" min="1" placeholder="₹ per litre"><button class="add" onclick="add(${i})">Add</button></div>`;
-   return `<div class="item"><b>${p.name}</b><div class="price">₹${p.price} • ${p.unit}</div><button class="add" onclick="add(${i})">Add</button></div>`;
- }).join("");
+
+  $("menu").innerHTML = products.map((p,i) => {
+
+    if(p.price === 0){
+
+      return `
+      <div class="item">
+        <b>${p.name}</b>
+
+        <div class="small">
+          Rate owner se set hoga (${p.unit})
+        </div>
+
+        <input
+          id="p${i}"
+          type="number"
+          min="1"
+          placeholder="₹ per litre">
+
+        <button class="add" onclick="add(${i})">
+          Add
+        </button>
+      </div>
+      `;
+    }
+
+    return `
+    <div class="item">
+      <b>${p.name}</b>
+
+      <div class="price">
+        ₹${p.price} • ${p.unit}
+      </div>
+
+      <button class="add" onclick="add(${i})">
+        Add
+      </button>
+    </div>
+    `;
+
+  }).join("");
 }
+
+
+// ================= ADD =================
+
 function add(i){
- const p=products[i]; let price=p.price;
- if(!price){price=Number(document.getElementById("p"+i).value); if(!price)return alert("Pehle per-litre rate bharo.");}
- if(!cart[i])cart[i]={...p,price,qty:0}; cart[i].qty++; renderCart();
-}
-function change(i,d){cart[i].qty+=d;if(cart[i].qty<=0)delete cart[i];renderCart()}
-function renderCart(){
- let keys=Object.keys(cart),sub=keys.reduce((s,k)=>s+cart[k].price*cart[k].qty,0);
- document.getElementById("cart").innerHTML=keys.length?keys.map(k=>`<div class="cartrow"><span><b>${cart[k].name}</b><br>₹${cart[k].price} × ${cart[k].qty}</span><span class="qty"><button class="secondary" onclick="change(${k},-1)">−</button>${cart[k].qty}<button class="secondary" onclick="change(${k},1)">+</button></span></div>`).join(""):'<div class="small">Cart khaali hai.</div>';
- document.getElementById("subtotal").textContent="Total: ₹"+(sub+(type==="delivery"?Math.ceil(distance/400)*10:0));
-}
-function setType(t){type=t;pickupBtn.classList.toggle("active",t==="pickup");deliveryBtn.classList.toggle("active",t==="delivery");deliveryBox.style.display=t==="delivery"?"block":"none";renderCart()}
-function calcDistance(){
- if(!navigator.geolocation)return alert("Location support nahi mila.");
- const shopLat=Number(localStorage.getItem("shopLat")),shopLon=Number(localStorage.getItem("shopLon"));
- if(!shopLat||!shopLon)return alert("Owner ko pehle shop location set karni hogi.");
- navigator.geolocation.getCurrentPosition(pos=>{
-  const R=6371000,lat1=shopLat*Math.PI/180,lat2=pos.coords.latitude*Math.PI/180,dLat=(pos.coords.latitude-shopLat)*Math.PI/180,dLon=(pos.coords.longitude-shopLon)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
-  distance=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-  document.getElementById("distanceText").textContent=`Approx distance: ${distance} m • Delivery charge: ₹${Math.ceil(distance/400)*10}`;
+
+  const p = products[i];
+  let price = p.price;
+
+  if(!price){
+
+    price = Number($("p"+i).value);
+
+    if(!price || price < 1){
+      alert("Pehle per-litre rate bharo.");
+      return;
+    }
+  }
+
+  if(!cart[i]){
+    cart[i] = {
+      name:p.name,
+      unit:p.unit,
+      price:price,
+      qty:0
+    };
+  }
+
+  cart[i].price = price;
+  cart[i].qty++;
+
   renderCart();
- },()=>alert("Location permission allow karo."));
 }
+
+
+// ================= QUANTITY =================
+
+function change(i,d){
+
+  if(!cart[i]) return;
+
+  cart[i].qty += d;
+
+  if(cart[i].qty <= 0){
+    delete cart[i];
+  }
+
+  renderCart();
+}
+
+
+// ================= CART =================
+
+function renderCart(){
+
+  const keys = Object.keys(cart);
+
+  $("cart").innerHTML = keys.length
+
+    ? keys.map(k => `
+      <div class="cartrow">
+
+        <span>
+          <b>${cart[k].name}</b><br>
+          ₹${cart[k].price} × ${cart[k].qty}
+        </span>
+
+        <span class="qty">
+
+          <button
+            class="secondary"
+            onclick="change(${k},-1)">
+            −
+          </button>
+
+          ${cart[k].qty}
+
+          <button
+            class="secondary"
+            onclick="change(${k},1)">
+            +
+          </button>
+
+        </span>
+
+      </div>
+    `).join("")
+
+    : '<div class="small">Cart khaali hai.</div>';
+
+  const dc = deliveryCharge();
+
+  $("subtotal").textContent =
+    "Total: ₹" +
+    (itemsTotal() + dc) +
+    (dc ? " (delivery ₹" + dc + " shamil)" : "");
+}
+
+
+// ================= PICKUP / DELIVERY =================
+
+function setType(t){
+
+  type = t;
+
+  $("pickupBtn")
+    .classList
+    .toggle("active",t === "pickup");
+
+  $("deliveryBtn")
+    .classList
+    .toggle("active",t === "delivery");
+
+  $("deliveryBox").style.display =
+    t === "delivery" ? "block" : "none";
+
+  renderCart();
+}
+
+
+// ================= DISTANCE =================
+
+function calcDistance(){
+
+  if(!shopLocationSet()){
+
+    $("distanceText").textContent =
+      "Delivery charge dukaan se confirm hoga.";
+
+    alert("Delivery charge owner confirm karega.");
+    return;
+  }
+
+  if(!navigator.geolocation){
+
+    alert("Location support nahi mila.");
+    return;
+  }
+
+  $("distanceText").textContent =
+    "Location nikal rahe hain...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    pos => {
+
+      const R = 6371000;
+
+      const lat1 =
+        CONFIG.SHOP_LAT * Math.PI / 180;
+
+      const lat2 =
+        pos.coords.latitude * Math.PI / 180;
+
+      const dLat =
+        (pos.coords.latitude - CONFIG.SHOP_LAT)
+        * Math.PI / 180;
+
+      const dLon =
+        (pos.coords.longitude - CONFIG.SHOP_LON)
+        * Math.PI / 180;
+
+      const a =
+        Math.sin(dLat/2)**2 +
+        Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(dLon/2)**2;
+
+      distance = Math.round(
+        R * 2 *
+        Math.atan2(
+          Math.sqrt(a),
+          Math.sqrt(1-a)
+        )
+      );
+
+      $("distanceText").textContent =
+        "Approx distance: " +
+        distance +
+        " m • Delivery charge: ₹" +
+        deliveryCharge();
+
+      renderCart();
+    },
+
+    () => {
+
+      $("distanceText").textContent = "";
+
+      alert("Location permission allow karo.");
+    }
+  );
+}
+
+
+// ================= SHOP LOCATION =================
+
+function getShopLocation(){
+
+  if(!navigator.geolocation){
+
+    alert("Location support nahi mila.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    pos => {
+
+      $("setupResult").textContent =
+        "SHOP_LAT: " +
+        pos.coords.latitude.toFixed(6) +
+        " | SHOP_LON: " +
+        pos.coords.longitude.toFixed(6);
+    },
+
+    () => {
+
+      alert("Location permission allow karo.");
+    }
+  );
+}
+
+
+// ================= PAYMENT =================
+
 function payNow(){
- const keys=Object.keys(cart); if(!keys.length)return alert("Pehle item add karo.");
- if(!name.value.trim()||!phone.value.trim())return alert("Name aur mobile bharo.");
- if(type==="delivery"&&!address.value.trim())return alert("Delivery address bharo.");
- const upi="YOUR-UPI@BANK"; // Replace with Prince bhaiya's real UPI ID
- const amount=keys.reduce((s,k)=>s+cart[k].price*cart[k].qty,0)+(type==="delivery"?Math.ceil(distance/400)*10:0);
- const order="JBB-"+Date.now();
- const url=`upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent("Jai Bajrang Bali Fast Food")}&am=${amount}&cu=INR&tn=${encodeURIComponent(order)}`;
- location.href=url;
- setTimeout(()=>{status.style.display="block";status.textContent=`Payment app open hona chahiye. Payment ke baad owner ko order ID ${order} aur payment screenshot/transaction ID dena hoga jab tak automatic gateway verification connect na ho.`},800);
+
+  const keys = Object.keys(cart);
+
+  if(!keys.length){
+
+    alert("Pehle item add karo.");
+    return;
+  }
+
+  const name =
+    $("name").value.trim();
+
+  let phone =
+    $("phone").value.replace(/[\s+-]/g,"");
+
+  if(
+    phone.length === 12 &&
+    phone.startsWith("91")
+  ){
+    phone = phone.slice(2);
+  }
+
+  if(!name){
+
+    alert("Apna naam bharo.");
+    return;
+  }
+
+  if(!/^\d{10}$/.test(phone)){
+
+    alert("10 digit ka sahi mobile number bharo.");
+    return;
+  }
+
+  const address =
+    $("address").value.trim();
+
+  if(type === "delivery"){
+
+    if(!address){
+
+      alert("Delivery address bharo.");
+      return;
+    }
+
+    if(shopLocationSet() && distance === 0){
+
+      alert(
+        "Pehle 'My location se distance nikalo' dabao."
+      );
+
+      return;
+    }
+  }
+
+  const amount =
+    itemsTotal() + deliveryCharge();
+
+  if(amount <= 0){
+
+    alert("Total amount sahi nahi hai.");
+    return;
+  }
+
+
+  // ORDER ID
+
+  const orderId =
+    "JBB-" + Date.now();
+
+
+  // ORDER ITEMS
+
+  const lines = keys.map(k =>
+    "• " +
+    cart[k].name +
+    " x " +
+    cart[k].qty +
+    " = ₹" +
+    (cart[k].price * cart[k].qty)
+  );
+
+
+  const note =
+    $("note").value.trim();
+
+
+  // WHATSAPP MESSAGE
+
+  const summary =
+    "🚩 *" +
+    CONFIG.SHOP_NAME +
+    "*\n" +
+
+    "Order ID: " +
+    orderId +
+    "\n\n" +
+
+    lines.join("\n") +
+    "\n\n" +
+
+    (type === "delivery"
+      ? "Delivery charge: ₹" +
+        deliveryCharge() +
+        "\n"
+      : "") +
+
+    "*Total: ₹" +
+    amount +
+    "*\n" +
+
+    "Type: " +
+    (type === "delivery"
+      ? "Home Delivery"
+      : "Shop Pickup") +
+    "\n" +
+
+    "Naam: " +
+    name +
+    "\n" +
+
+    "Mobile: " +
+    phone +
+    "\n" +
+
+    (type === "delivery"
+      ? "Address: " +
+        address +
+        "\n"
+      : "") +
+
+    (note
+      ? "Note: " +
+        note +
+        "\n"
+      : "") +
+
+    "\nPayment kar diya hai. " +
+    "Payment screenshot bhej raha hu.";
+
+  lastOrder = {
+    summary:summary
+  };
+
+
+  // UPI URL
+
+  const upiUrl =
+    "upi://pay?" +
+    "pa=" +
+    encodeURIComponent(CONFIG.UPI_ID) +
+    "&pn=" +
+    encodeURIComponent(CONFIG.SHOP_NAME) +
+    "&am=" +
+    amount.toFixed(2) +
+    "&cu=INR" +
+    "&tn=" +
+    encodeURIComponent(orderId);
+
+
+  // STATUS
+
+  const st = $("status");
+
+  st.style.display = "block";
+
+  st.innerHTML =
+    "💳 <b>UPI payment open ho raha hai...</b>" +
+    "<br><br>" +
+
+    "Payment screen mein receiver aur amount check karo. " +
+    "UPI PIN sirf apne UPI app mein khud enter karo." +
+
+    "<br><br>" +
+
+    "Payment ke baad order aur payment screenshot " +
+    "Prince bhaiya ke WhatsApp par bhejo." +
+
+    "<br><br>" +
+
+    "Order ID: <b>" +
+    orderId +
+    "</b>" +
+
+    '<button class="wa" onclick="sendWhatsApp()">' +
+    "📲 Payment ke baad WhatsApp par Order bhejo" +
+    "</button>";
+
+
+  // OPEN UPI APP
+
+  window.location.href = upiUrl;
 }
-renderMenu();renderCart();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+
+
+// ================= WHATSAPP =================
+
+function sendWhatsApp(){
+
+  if(!lastOrder){
+
+    alert("Pehle order/payment start karo.");
+    return;
+  }
+
+  const whatsappUrl =
+    "https://wa.me/" +
+    CONFIG.OWNER_WHATSAPP +
+    "?text=" +
+    encodeURIComponent(lastOrder.summary);
+
+  window.open(
+    whatsappUrl,
+    "_blank"
+  );
+}
+
+
+// ================= OWNER SETUP =================
+
+if(
+  location.search.indexOf("setup=1") !== -1
+){
+
+  $("setupBox").style.display = "block";
+}
+
+
+// ================= START =================
+
+renderMenu();
+renderCart();
+
+
+// ================= SERVICE WORKER =================
+
+if("serviceWorker" in navigator){
+
+  navigator.serviceWorker
+    .register("sw.js")
+    .catch(function(){});
+
+}
+
 </script>
+
 </body>
 </html>
