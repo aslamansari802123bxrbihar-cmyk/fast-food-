@@ -1,0 +1,9 @@
+{
+  "name": "Jai Bajrang Bali Fast Food",
+  "short_name": "JBB Fast Food",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#c62828",
+  "icons": []
+}
